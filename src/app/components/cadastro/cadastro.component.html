@@ -1,0 +1,68 @@
+<form [formGroup]="cadastroForm">
+  <div class="flex justify-center items-center h-screen">
+    <div class="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
+      <mat-card>
+        <mat-card-header class="justify-center mb-4">
+          <mat-card-title>Cadastro</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content>
+          <mat-form-field appearance="fill" class="w-full">
+            <mat-label>Nome Completo</mat-label>
+            <input matInput formControlName="nomeCompleto" />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" class="w-full">
+            <mat-label>Endereço de email</mat-label>
+            <input matInput formControlName="email" />
+            <mat-error *ngIf="emailInvalido">
+              Endereço de email inválido.
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" class="w-full">
+            <mat-label>Senha</mat-label>
+            <input
+              matInput
+              [type]="
+                cadastroForm.get('ocultarSenha')?.value ? 'password' : 'text'
+              "
+              formControlName="senha"
+            />
+          </mat-form-field>
+
+          <mat-form-field
+            appearance="fill"
+            class="w-full"
+            *ngIf="cadastroForm.get('senha')?.value.length >= 8"
+          >
+            <mat-label>Confirmar senha</mat-label>
+            <input
+              matInput
+              [type]="
+                cadastroForm.get('ocultarSenha')?.value ? 'password' : 'text'
+              "
+              formControlName="confirmarSenha"
+            />
+            <mat-error *ngIf="senhasNaoCombinamErro">
+              As senhas não combinam.
+            </mat-error>
+          </mat-form-field>
+
+          <mat-checkbox
+            class="mb-4"
+            color="primary"
+            formControlName="ocultarSenha"
+            >Ocultar senha
+          </mat-checkbox>
+
+          <mat-card-actions class="justify-center mb-4">
+            <button mat-flat-button color="primary" class="w-full">
+              Cadastrar
+            </button>
+          </mat-card-actions>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</form>
