@@ -1,4 +1,15 @@
-<form [formGroup]="cadastroForm">
+<form
+  [formGroup]="login"
+  (ngSubmit)="
+    encontrarUsuario(login.get('email')?.value, login.get('email')?.value)
+  "
+>
+  <div *ngIf="errorMessage" class="error-message">
+    <h2>Error</h2>
+    <p>{{ errorMessage }}</p>
+    <button (click)="closeErrorMessage()">Close</button>
+  </div>
+
   <div class="flex justify-center items-center h-screen">
     <div class="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
       <mat-card>
@@ -37,12 +48,7 @@
           </div>
 
           <mat-card-actions class="justify-center mb-4">
-            <button
-              mat-flat-button
-              color="primary"
-              class="w-full"
-              (click)="enviar()"
-            >
+            <button mat-flat-button color="primary" class="w-full">
               Entrar
             </button>
           </mat-card-actions>

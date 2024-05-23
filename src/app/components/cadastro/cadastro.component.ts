@@ -17,6 +17,9 @@ import {
   Validators,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
+import { UserService } from '../../services/user.service';
+import { User } from '../../models/user.model';
 
 @Component({
   selector: 'app-cadastro',
@@ -32,16 +35,17 @@ import { CommonModule } from '@angular/common';
     MatCheckboxModule,
     FormsModule,
     ReactiveFormsModule,
+    HttpClientModule,
   ],
   templateUrl: './cadastro.component.html',
   styleUrl: './cadastro.component.scss',
 })
 export class CadastroComponent {
   cadastroForm: FormGroup;
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private userService: UserService) {
     this.cadastroForm = this.fb.group(
       {
-        nomeCompleto: ['', Validators.required],
+        nome: ['', Validators.required],
         email: ['', [Validators.required, Validators.email]],
         senha: ['', [Validators.required, Validators.minLength(8)]],
         confirmarSenha: ['', Validators.required],
@@ -76,5 +80,24 @@ export class CadastroComponent {
   get emailInvalido(): boolean | null {
     const email = this.cadastroForm.get('email');
     return email && email.invalid && email.touched && email.value !== '';
+  }
+
+  submitForm(): void {
+    if (this.cadastroForm.valid) {
+      const usuario = { ...this.cadastroForm.value };
+      delete usuario.confirmarSenha;
+
+      this.userService.createUsuario(usuario).subscribe(
+        (response) => {
+          console.log('Usuário criado com sucesso:', response);
+        },
+        (error) => {
+          console.error('Erro ao criar usuário:', error);
+        }
+      );
+    } else {
+      // Marcar campos inválidos
+      this.cadastroForm.markAllAsTouched();
+    }
   }
 }
