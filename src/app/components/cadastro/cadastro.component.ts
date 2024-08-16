@@ -18,8 +18,9 @@ import {
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { UserService } from '../../services/login.service';
+
 import { User } from '../../models/user.model';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-cadastro',
