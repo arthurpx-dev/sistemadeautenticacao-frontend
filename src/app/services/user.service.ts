@@ -7,7 +7,7 @@ import { Observable, catchError, map, of, tap, throwError } from 'rxjs';
   providedIn: 'root',
 })
 export class UserService {
-  private readonly API = '/usuarios';
+  private readonly API = '/auth/register';
 
   constructor(private httpClient: HttpClient) {}
 
