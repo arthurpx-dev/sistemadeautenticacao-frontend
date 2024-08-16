@@ -18,8 +18,8 @@ import {
 import { CommonModule } from '@angular/common';
 import { User } from '../../models/user.model';
 
-import { UserService } from '../../services/user.service';
-import { catchError, map } from 'rxjs';
+import { UserService } from '../../services/login.service';
+import { catchError, map, of } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -53,6 +53,7 @@ export class LoginComponent {
     private userService: UserService
   ) {
     this.login = this.fb.group({
+      id: ['', []],
       email: ['', [Validators.required, Validators.email]],
       senha: ['', [Validators.required, Validators.minLength(5)]],
       // ocultarSenha: [true],
@@ -66,23 +67,27 @@ export class LoginComponent {
 
   ngOnInit(): void {}
 
-  encontrarUsuario(email: string, password: string): void {
-    this.userService.getAllUsers().subscribe(
-      (users) => {
-        const usuarioEncontrado = users.find(
-          (user) => user.email === email && user.password === password
-        );
-        if (!usuarioEncontrado) {
-          this.errorMessage = 'Credenciais inválidas';
-          return;
+  encontrarUsuario(): void {
+    this.userService
+      .getUsuarioById('1')
+      .pipe(
+        map((user) => {
+          console.log('Usuário encontrado:', user);
+          return user;
+        }),
+        catchError((error) => {
+          console.error('Erro ao encontrar usuário:', error);
+          this.errorMessage = 'Erro ao encontrar usuário';
+          return of(null);
+        })
+      )
+      .subscribe((user) => {
+        if (user) {
+          console.log('Usuário encontrado:', user);
+        } else {
+          console.log('Nenhum usuário encontrado ou erro ocorrido.');
         }
-        console.log(usuarioEncontrado);
-      },
-      (error) => {
-        console.error('Erro ao encontrar usuário:', error);
-        // Trate o erro aqui se necessário
-      }
-    );
+      });
   }
 
   closeErrorMessage(): void {
