@@ -8,7 +8,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 
 import { MatCardModule } from '@angular/material/card';
 import { CadastroComponent } from '../cadastro/cadastro.component';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import {
   FormBuilder,
   FormGroup,
@@ -18,8 +18,8 @@ import {
 import { CommonModule } from '@angular/common';
 import { User } from '../../models/user.model';
 
-import { catchError, map, of } from 'rxjs';
-import { UserService } from '../../services/user.service';
+import { catchError, map, of, tap } from 'rxjs';
+import { LoginService } from '../../services/login.service';
 
 @Component({
   selector: 'app-login',
@@ -49,8 +49,9 @@ export class LoginComponent {
 
   constructor(
     private fb: FormBuilder,
+    private router: Router,
 
-    private userService: UserService
+    private loginService: LoginService
   ) {
     this.login = this.fb.group({
       id: ['', []],
@@ -68,26 +69,24 @@ export class LoginComponent {
   ngOnInit(): void {}
 
   encontrarUsuario(): void {
-    // this.userService
-    //   .getUsuarioById('1')
-    //   .pipe(
-    //     map((user) => {
-    //       console.log('Usuário encontrado:', user);
-    //       return user;
-    //     }),
-    //     catchError((error) => {
-    //       console.error('Erro ao encontrar usuário:', error);
-    //       this.errorMessage = 'Erro ao encontrar usuário';
-    //       return of(null);
-    //     })
-    //   )
-    //   .subscribe((user) => {
-    //     if (user) {
-    //       console.log('Usuário encontrado:', user);
-    //     } else {
-    //       console.log('Nenhum usuário encontrado ou erro ocorrido.');
-    //     }
-    //   });
+    if (this.login.valid) {
+      const { email, senha } = this.login.value;
+
+      this.loginService
+        .login(email, senha)
+        .pipe(
+          tap((response) => {
+            console.log('Usuário encontrado:', response);
+            this.router.navigate(['/inicio']);
+          }),
+          catchError((error) => {
+            return error;
+          })
+        )
+        .subscribe();
+    } else {
+      this.login.markAllAsTouched();
+    }
   }
 
   closeErrorMessage(): void {

@@ -1,5 +1,5 @@
 const PROXY_CONFIG = {
-  "/usuarios": {
+  "/auth": {
     target: "http://localhost:8080/",
     secure: false,
     logLevel: "debug",

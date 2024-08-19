@@ -17,10 +17,22 @@ import {
   Validators,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
+import {
+  HTTP_INTERCEPTORS,
+  HttpClientModule,
+  HttpErrorResponse,
+  HttpResponseBase,
+} from '@angular/common/http';
 
 import { User } from '../../models/user.model';
-import { UserService } from '../../services/user.service';
+
+import { authGuard } from '../../guards/auth.guard';
+
+import { catchError, tap, throwError } from 'rxjs';
+import { AuthInterceptor } from '../../interceptors/auth.interceptor';
+import { LoginService } from '../../services/login.service';
+import { AuthGuard } from '../../services/auth-guard.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-cadastro',
@@ -38,12 +50,18 @@ import { UserService } from '../../services/user.service';
     ReactiveFormsModule,
     HttpClientModule,
   ],
+  providers: [LoginService],
   templateUrl: './cadastro.component.html',
   styleUrl: './cadastro.component.scss',
 })
 export class CadastroComponent {
   cadastroForm: FormGroup;
-  constructor(private fb: FormBuilder, private userService: UserService) {
+
+  constructor(
+    private fb: FormBuilder,
+    private loginService: LoginService,
+    private router: Router
+  ) {
     this.cadastroForm = this.fb.group(
       {
         nome: ['', Validators.required],
@@ -85,19 +103,21 @@ export class CadastroComponent {
 
   submitForm(): void {
     if (this.cadastroForm.valid) {
-      const usuario = { ...this.cadastroForm.value };
-      delete usuario.confirmarSenha;
+      const { nome, email, senha } = this.cadastroForm.value;
 
-      this.userService.createUsuario(usuario).subscribe(
-        (response) => {
-          console.log('Usuário criado com sucesso:', response);
-        },
-        (error) => {
-          console.error('Erro ao criar usuário:', error);
-        }
-      );
+      this.loginService
+        .signup(nome, email, senha)
+        .pipe(
+          tap((response) => {
+            console.log('Usuário criado com sucesso:', response);
+            this.router.navigate(['/login']);
+          }),
+          catchError((error) => {
+            return error;
+          })
+        )
+        .subscribe();
     } else {
-      // Marcar campos inválidos
       this.cadastroForm.markAllAsTouched();
     }
   }
