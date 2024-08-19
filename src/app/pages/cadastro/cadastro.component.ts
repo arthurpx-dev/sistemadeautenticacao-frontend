@@ -31,8 +31,9 @@ import { authGuard } from '../../guards/auth.guard';
 import { catchError, tap, throwError } from 'rxjs';
 import { AuthInterceptor } from '../../interceptors/auth.interceptor';
 import { LoginService } from '../../services/login.service';
-import { AuthGuard } from '../../services/auth-guard.service';
+
 import { Router } from '@angular/router';
+import { SnackbarService } from '../../services/snackbar.service';
 
 @Component({
   selector: 'app-cadastro',
@@ -60,7 +61,8 @@ export class CadastroComponent {
   constructor(
     private fb: FormBuilder,
     private loginService: LoginService,
-    private router: Router
+    private router: Router,
+    private snackBarService: SnackbarService
   ) {
     this.cadastroForm = this.fb.group(
       {
@@ -109,10 +111,12 @@ export class CadastroComponent {
         .signup(nome, email, senha)
         .pipe(
           tap((response) => {
-            console.log('Usuário criado com sucesso:', response);
+            this.snackBarService.showSuccess('Usuário criado com sucesso');
             this.router.navigate(['/login']);
           }),
           catchError((error) => {
+            this.snackBarService.showError(error.status);
+
             return error;
           })
         )

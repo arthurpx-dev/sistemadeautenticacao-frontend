@@ -20,6 +20,8 @@ import { User } from '../../models/user.model';
 
 import { catchError, map, of, tap } from 'rxjs';
 import { LoginService } from '../../services/login.service';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { SnackbarService } from '../../services/snackbar.service';
 
 @Component({
   selector: 'app-login',
@@ -36,6 +38,7 @@ import { LoginService } from '../../services/login.service';
     ReactiveFormsModule,
     MatDialogModule,
     CommonModule,
+    MatSnackBarModule,
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
@@ -50,7 +53,7 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-
+    private snackBarService: SnackbarService,
     private loginService: LoginService
   ) {
     this.login = this.fb.group({
@@ -77,9 +80,13 @@ export class LoginComponent {
         .pipe(
           tap((response) => {
             console.log('Usuário encontrado:', response);
-            this.router.navigate(['/inicio']);
+            this.router.navigate(['/start']);
           }),
           catchError((error) => {
+            console.error(error);
+            if (error.status == 403) {
+              this.snackBarService.showError('Usuário não encontrado');
+            }
             return error;
           })
         )

@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './components/login/login.component';
-import { CadastroComponent } from './components/cadastro/cadastro.component';
-import { InicioComponent } from './components/inicio/inicio.component';
+import { LoginComponent } from './pages/login/login.component';
+import { CadastroComponent } from './pages/cadastro/cadastro.component';
+import { InicioComponent } from './pages/inicio/inicio.component';
 import { AuthGuard } from './services/auth-guard.service';
 
 export const routes: Routes = [
@@ -14,7 +14,7 @@ export const routes: Routes = [
     component: CadastroComponent,
   },
   {
-    path: 'inicio',
+    path: 'start',
     component: InicioComponent,
     canActivate: [AuthGuard],
   },
