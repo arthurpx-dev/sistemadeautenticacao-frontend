@@ -1,0 +1,8 @@
+version: "3"
+services:
+  sistemadeautenticacao-frontend:
+    image: sistemadeautenticacao-frontend:latest
+    ports:
+      - "80:80"
+    depends_on:
+      - sistemadeautenticacao
